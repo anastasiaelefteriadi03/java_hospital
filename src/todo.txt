@@ -1,0 +1,11 @@
+1. create hospital
+2. view hospitals
+3. create doctor
+4. view doctors (sorted by yearsOfExperience)
+5. view patients of a doctor
+6. create patient
+7. view patients
+8. search patient by name (+ display doctor)
+9. view patients over *input* years
+10. update condition of a patient by ID
+11. delete patient by ID
