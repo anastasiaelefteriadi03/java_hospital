@@ -32,3 +32,4 @@ public class HospitalController implements IHospitalController {
         return response.toString();
     }
 }
+// MVC - Model / View / Controller

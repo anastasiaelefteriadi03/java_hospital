@@ -36,8 +36,8 @@ public class Patient extends Person {
     public String toString() {
         return "Patient{" +
                 super.toString() +
-                ", speciality='" + condition + '\'' +
-                (doctorName != null ? ", doctorName=" + doctorName : ", doctorId=" + Integer.toString(doctorId)) +
+                ", condition='" + condition + '\'' +
+                (doctorName != null ? ", doctorName='" + doctorName + '\'' : ", doctorId=" + Integer.toString(doctorId)) +
                 '}';
     }
 }

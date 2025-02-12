@@ -5,7 +5,7 @@ import models.Patient;
 import repositories.iterfaces.IPatientRepository;
 
 import java.sql.*;
-import java.time.LocalDate;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,14 +22,14 @@ public class PatientRepository implements IPatientRepository {
 
         try {
             con = db.getConnection();
-            String sql = "INSERT INTO patients(name,birthdate,gender,condition,doctor_id) VALUES (?,?,?,?,?)";
+            String sql = "INSERT INTO patients(name,birthdate,gender,condition,doctor_id) VALUES (?,TO_DATE(?, 'DD-MM-YYYY'),?,?,?)";
             PreparedStatement st = con.prepareStatement(sql);
 
             st.setString(1, patient.getName());
-            st.setString(2, patient.getBirthDate().toString());
-            st.setString(3, patient.getGender() ? "0" : "1");
+            st.setString(2, new SimpleDateFormat("dd-MM-yyyy").format(patient.getBirthDate()));
+            st.setBoolean(3, patient.getGender());
             st.setString(4, patient.getCondition());
-            st.setString(5, Integer.toString(patient.getDoctorId()));
+            st.setInt(5, patient.getDoctorId());
 
             st.execute();
 
@@ -47,19 +47,19 @@ public class PatientRepository implements IPatientRepository {
 
         try {
             con = db.getConnection();
-            String sql = "SELECT * FROM patients LEFT JOIN doctors ON patients.doctor_id = doctors.id";
+            String sql = "SELECT patients.id AS id, patients.name AS name, patients.birthdate AS birthdate, patients.gender AS gender, patients.condition AS condition, patients.doctor_id AS doctor_id, doctors.name AS doctor FROM patients LEFT JOIN doctors ON patients.doctor_id = doctors.id";
             Statement st = con.createStatement();
 
             ResultSet rs = st.executeQuery(sql);
             List<Patient> patients = new ArrayList<>();
             while (rs.next()) {
-                Patient patient = new Patient(rs.getInt("patients.id"),
-                        rs.getString("patients.name"),
-                        rs.getDate("patients.birthdate"),
-                        rs.getBoolean("patients.gender"),
-                        rs.getString("patients.condition"),
-                        rs.getInt("patients.doctor_id"),
-                        rs.getString("doctors.name"));
+                Patient patient = new Patient(rs.getInt("id"),
+                        rs.getString("name"),
+                        rs.getDate("birthdate"),
+                        rs.getBoolean("gender"),
+                        rs.getString("condition"),
+                        rs.getInt("doctor_id"),
+                        rs.getString("doctor"));
 
                 patients.add(patient);
             }
@@ -81,7 +81,7 @@ public class PatientRepository implements IPatientRepository {
             String sql = "DELETE FROM patients WHERE id = ?";
             PreparedStatement st = con.prepareStatement(sql);
 
-            st.setString(1, Integer.toString(id));
+            st.setInt(1, id);
 
             st.execute();
 
@@ -103,7 +103,7 @@ public class PatientRepository implements IPatientRepository {
             PreparedStatement st = con.prepareStatement(sql);
 
             st.setString(1, condition);
-            st.setString(2, Integer.toString(id));
+            st.setInt(2, id);
 
             st.execute();
 
@@ -121,19 +121,21 @@ public class PatientRepository implements IPatientRepository {
 
         try {
             con = db.getConnection();
-            String sql = "SELECT * from patients left join doctors on patients.doctor_id = doctors.id where DATE_PART('YEAR', AGE(CURRENT_DATE, birthdate)) > ?";
-            Statement st = con.createStatement();
+            String sql = "SELECT patients.id AS id, patients.name AS name, patients.birthdate AS birthdate, patients.gender AS gender, patients.condition AS condition, patients.doctor_id AS doctor_id, doctors.name AS doctor FROM patients LEFT JOIN doctors ON patients.doctor_id = doctors.id WHERE DATE_PART('YEAR', AGE(CURRENT_DATE, patients.birthdate)) > ?";
+            PreparedStatement st = con.prepareStatement(sql);
 
-            ResultSet rs = st.executeQuery(sql);
+            st.setInt(1, age);
+
+            ResultSet rs = st.executeQuery();
             List<Patient> patients = new ArrayList<>();
             while (rs.next()) {
-                Patient patient = new Patient(rs.getInt("patients.id"),
-                        rs.getString("patients.name"),
-                        rs.getDate("patients.birthdate"),
-                        rs.getBoolean("patients.gender"),
-                        rs.getString("patients.condition"),
-                        rs.getInt("patients.doctor_id"),
-                        rs.getString("doctors.name"));
+                Patient patient = new Patient(rs.getInt("id"),
+                        rs.getString("name"),
+                        rs.getDate("birthdate"),
+                        rs.getBoolean("gender"),
+                        rs.getString("condition"),
+                        rs.getInt("doctor_id"),
+                        rs.getString("doctor"));
 
                 patients.add(patient);
             }

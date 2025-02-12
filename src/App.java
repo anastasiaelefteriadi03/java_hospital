@@ -2,14 +2,11 @@ import controllers.interfaces.IDoctorController;
 import controllers.interfaces.IHospitalController;
 import controllers.interfaces.IPatientController;
 
-import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeFormatterBuilder;
 import java.util.Date;
 import java.util.InputMismatchException;
-import java.util.Locale;
 import java.util.Scanner;
 
 public class App {
@@ -124,23 +121,49 @@ public class App {
     }
 
     public void createPatientMenu() {
+        System.out.println("Please enter name");
+        String name = scanner.next();
+        System.out.println("Please enter birth date (dd-mm-yyyy)");
+        String rawDate = scanner.next();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+        LocalDate localdate = LocalDate.parse(rawDate, formatter);
+        Date birthdate = Date.from(localdate.atStartOfDay(ZoneId.systemDefault()).toInstant());
+        System.out.println("Please enter gender (0 - male, 1 - female)");
+        boolean gender = scanner.next().equals("1");
+        System.out.println("Please enter condition");
+        String condition = scanner.next();
+        System.out.println("Please enter doctor id");
+        Integer doctorId = Integer.parseInt(scanner.next());
 
+        String response = patientController.create(name, birthdate, gender, condition, doctorId);
+        System.out.println(response);
     }
 
     public void getAllPatientsMenu() {
-
+        String response = patientController.getAll();
+        System.out.println(response);
     }
 
     public void getAllPatientsWithAgeOver() {
-
+        System.out.println("Please enter age");
+        Integer age = Integer.parseInt(scanner.next());
+        String response = patientController.getAllWithAgeOver(age);
+        System.out.println(response);
     }
 
     public void updatePatientConditionById() {
-
+        System.out.println("Please enter patient id");
+        Integer id = Integer.parseInt(scanner.next());
+        System.out.println("Please enter condition");
+        String condition = scanner.next();
+        String response = patientController.updateConditionById(id, condition);
+        System.out.println(response);
     }
 
     public void deletePatientById() {
-
+        System.out.println("Please enter patient id");
+        Integer id = Integer.parseInt(scanner.next());
+        String response = patientController.deleteById(id);
+        System.out.println(response);
     }
-
 }

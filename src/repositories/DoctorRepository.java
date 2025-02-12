@@ -23,7 +23,7 @@ public class DoctorRepository implements IDoctorRepository {
 
         try {
             con = db.getConnection();
-            String sql = "INSERT INTO doctors(name,birthdate,gender,speciality,years_of_experience,hospital_id) VALUES (?,to_date(?, 'DD-MM-YYYY'),?,?,?,?)";
+            String sql = "INSERT INTO doctors(name,birthdate,gender,speciality,years_of_experience,hospital_id) VALUES (?,TO_DATE(?, 'DD-MM-YYYY'),?,?,?,?)";
             PreparedStatement st = con.prepareStatement(sql);
 
             st.setString(1, doctor.getName());
@@ -80,7 +80,7 @@ public class DoctorRepository implements IDoctorRepository {
 
         try {
             con = db.getConnection();
-            String sql = "SELECT patients.id as id, patients.name as name, patients.birthdate as birthdate, patients.gender as gender, patients.condition as condition, patients.doctor_id as doctor_id, doctors.name as doctor FROM patients left join doctors on patients.doctor_id = doctors.id WHERE doctor_id=?";
+            String sql = "SELECT patients.id AS id, patients.name AS name, patients.birthdate AS birthdate, patients.gender AS gender, patients.condition AS condition, patients.doctor_id AS doctor_id, doctors.name AS doctor FROM patients LEFT JOIN doctors ON patients.doctor_id = doctors.id WHERE doctor_id=?";
             PreparedStatement st = con.prepareStatement(sql);
 
             st.setInt(1, id);
